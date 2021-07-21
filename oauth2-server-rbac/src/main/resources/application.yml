@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: oauth2-server-rbac
+
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    jdbc-url: jdbc:mysql://localhost:3306/oauth2?characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+    hikari:
+      minimum-idle: 5
+      idle-timeout: 600000
+      maximum-pool-size: 10
+      auto-commit: true
+      pool-name: MyHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: auto
+      field-strategy: not_empty
+      table-underline: true
+      db-type: mysql
+      logic-delete-field: isDelete  #全局逻辑删除字段。
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+  configuration:
+    map-underscore-to-camel-case: true #开启驼峰
+    cache-enabled: false
+    call-setters-on-nulls: true # 为null字段也返回
+    jdbc-type-for-null: null
+  mapper-locations: classpath*:mapper/*Mapper.xml
