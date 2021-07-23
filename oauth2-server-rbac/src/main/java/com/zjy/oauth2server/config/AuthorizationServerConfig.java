@@ -5,10 +5,12 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -46,6 +48,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        endpoints.allowedTokenEndpointRequestMethods(HttpMethod.POST);
+        endpoints.pathMapping("/oauth/confirm_access","/custom/confirm_access");
         // 设置令牌
         endpoints.tokenStore(tokenStore());
     }
@@ -54,5 +58,13 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         // 读取客户端配置
         clients.withClientDetails(jdbcClientDetails());
+    }
+
+    @Override
+    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+        security
+                .tokenKeyAccess("permitAll()")
+                .checkTokenAccess("permitAll()")
+                .allowFormAuthenticationForClients();
     }
 }

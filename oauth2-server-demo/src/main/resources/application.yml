@@ -1,11 +1,11 @@
 spring:
   application:
     name: oauth2-server-rbac
-
+## 数据库配置
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    jdbc-url: jdbc:mysql://localhost:3306/oauth2?characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/oauth2?characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
     password: 123456
     hikari:
@@ -17,11 +17,16 @@ spring:
       max-lifetime: 1800000
       connection-timeout: 30000
       connection-test-query: SELECT 1
-
-
+## 覆盖重复bean配置
   main:
     allow-bean-definition-overriding: true
+## Redis 配置
+  redis:
+    host: 192.168.18.195
+    port: 32268
+    password: itszhongxin
 
+## mybatis-plus配置
 mybatis-plus:
   global-config:
     db-config:
@@ -39,11 +44,10 @@ mybatis-plus:
     jdbc-type-for-null: null
   mapper-locations: classpath*:mapper/*Mapper.xml
 
-
+## 日志配置
 logging:
   level:
     org:
       springframework:
         security:
-          oauth2: debug
-
+          oauth2: DEBUG
