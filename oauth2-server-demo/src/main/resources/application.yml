@@ -1,11 +1,11 @@
 spring:
-  application:
-    name: oauth2-server-rbac
+#  application:
+#    name: oauth2-server-rbac
 ## 数据库配置
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/oauth2?characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/oauth2_demo?characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
     password: 123456
     hikari:
@@ -25,6 +25,8 @@ spring:
     host: 192.168.18.195
     port: 32268
     password: itszhongxin
+  mvc:
+    locale: zh_CN
 
 ## mybatis-plus配置
 mybatis-plus:
@@ -51,3 +53,18 @@ logging:
       springframework:
         security:
           oauth2: DEBUG
+    com:
+      zjy:
+        oauth2server:
+          mapper: debug
+
+## security 配置
+zjy:
+  security:
+    oauth2:
+      type: db
+    filter:
+      urls: /captcha
+#    client:
+#      # 客户端 id
+#      resourceId: product

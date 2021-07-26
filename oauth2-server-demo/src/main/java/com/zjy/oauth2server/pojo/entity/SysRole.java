@@ -1,49 +1,58 @@
 package com.zjy.oauth2server.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
- * @Desc  
- * @author  liugenlai
- * @since 2021-07-21 15:25 
- */
+ * 角色信息
+ * @author: stars
+ * @date 2020年 07月 09日 11:55
+ **/
 @Data
-@TableName(value ="sys_role")
-public class SysRole  implements Serializable {
+public class SysRole implements Serializable {
 
-	private static final long serialVersionUID =  5978382683868618671L;
+    @TableId(type = IdType.AUTO)
+    private Long id;
+    /**
+     * 角色名称
+     */
+    private String name;
+    /**
+     * 角色描述
+     */
+    private String remark;
 
-   	@TableId(value = "id", type = IdType.AUTO)
-	private Integer id;
+    private Date createDate;
+    private Date updateDate;
 
-	/**
-	 * 父角色
-	 */
-	private Integer parentId;
+    /**
+     * 存储当前角色的权限资源对象集合
+     * 修改角色时用到
+     */
+    @TableField(exist = false)
+    private List<SysPermission> perList = new ArrayList<>();
+    /**
+     * 存储当前角色的权限资源ID集合
+     * 修改角色时用到
+     */
+    @TableField(exist = false)
+    private List<Long> perIds = new ArrayList<Long>();
 
-	/**
-	 * 角色名称
-	 */
-	private String name;
-
-	/**
-	 * 角色英文名称
-	 */
-	private String enname;
-
-	/**
-	 * 备注
-	 */
-	private String description;
-
-	private Date created;
-
-	private Date updated;
-
+    public List<Long> getPerIds() {
+        if(CollectionUtils.isNotEmpty(perList)) {
+            perIds =new ArrayList<Long>();
+            for(SysPermission per : perList) {
+                perIds.add(per.getId());
+            }
+        }
+        return perIds;
+    }
 }

@@ -1,24 +1,27 @@
 package com.zjy.oauth2server.config;
 
-import com.zjy.oauth2server.config.service.ClientDetailsServiceImpl;
-import com.zjy.oauth2server.config.service.UserDetailsServiceImpl;
-import com.zjy.oauth2server.exception.SecurityExceptionHandler;
-import com.zjy.oauth2server.filter.IntegrationAuthenticationFilter;
+import com.zjy.oauth2server.config.service.CustomUserDetailsService;
+import com.zjy.oauth2server.exception.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
+import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
+
+import javax.sql.DataSource;
 
 /**
- * 认证授权 配置
+ * 认证授权 配置类
  * @author liugenlai
  * @since 2021/7/23 16:25
  */
@@ -27,41 +30,93 @@ import org.springframework.security.oauth2.provider.token.store.redis.RedisToken
 @RequiredArgsConstructor
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
-    private final RedisConnectionFactory redisConnectionFactory;
     private final AuthenticationManager authenticationManager;
-    private final UserDetailsServiceImpl userDetailsService;
-    private final SecurityExceptionHandler securityExceptionHandler;
-    private final ClientDetailsServiceImpl redisClientDetailsService;
-    private final IntegrationAuthenticationFilter authenticationFilter;
+    private final CustomUserDetailsService userDetailsService;
+    // private final IntegrationAuthenticationFilter authenticationFilter;
+    private final TokenStore tokenStore;
+    private final DataSource dataSource;
+    @Autowired(required = false)
+    private JwtAccessTokenConverter jwtAccessTokenConverter;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
+
+    /**
+     * 从数据库获取授权码策略：authentication_code,password......
+     * <p>authorizedGrantTypes授权类型, 可同时支持多种授权类型
+     * <ul>
+     *     <li>authorization_code：授权码模式</li>
+     *     <li>password：密码模式</li>
+     *     <li>implicit：简化模式</li>
+     *     <li>client_credentials：客户端模式</li>
+     *     <li>refresh_token：刷新令牌</li>
+     * </ul>
+     * </p>
+     * @return
+     */
+    @Bean
+    public JdbcAuthorizationCodeServices jdbcAuthorizationCodeServices() {
+        return new JdbcAuthorizationCodeServices(dataSource);
+    }
+
+    /**
+     * 使用 jdbcClientDetailsService
+     * @return
+     */
+    @Bean
+    public ClientDetailsService jdbcClientDetailsService(){
+        return new JdbcClientDetailsService(dataSource);
+    }
+
+    /**
+     * 允许访问此认证服务器的客户端详情信息配置
+     * 方式1：内存方式管理（inMemory/redis）
+     * 方式2：数据库管理（db）
+     * @param clients
+     * @throws Exception
+     */
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        // 客户端配置
-        clients.withClientDetails(redisClientDetailsService);
+        clients.withClientDetails(jdbcClientDetailsService());
     }
 
+    /**
+     * 认证服务器端点配置
+     * @param endpoints
+     * @throws Exception
+     */
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        // 令牌配置
-        endpoints.tokenStore(new RedisTokenStore(redisConnectionFactory))
+        endpoints
+                // 设置 token管理方式
+                .tokenStore(tokenStore)
+                // password 需要 manager 验证器
                 .authenticationManager(authenticationManager)
-                .exceptionTranslator(securityExceptionHandler)
-                .reuseRefreshTokens(false)
-                .userDetailsService(userDetailsService);
+                // 刷新令牌时需要用到 userDetailService
+                .userDetailsService(userDetailsService)
+                // 授权码管理策略，针对授权码模式有效，会将授权码放到 auth_code 表，授权后就会删除它
+                .authorizationCodeServices(jdbcAuthorizationCodeServices())
+                // 禁止重复使用 refreshToken
+                .reuseRefreshTokens(false);
+        // 判断是否使用了 jwt令牌认证 模式
+        if (jwtAccessTokenConverter != null) {
+            // 指定JWT转换器 accessTokenConverter
+            endpoints.accessTokenConverter(jwtAccessTokenConverter);
+        }
     }
 
+    /**
+     * 端点的安全配置
+     * @param security
+     * @throws Exception
+     */
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
         security.allowFormAuthenticationForClients()
-                .tokenKeyAccess("isAuthenticated()")
-                .checkTokenAccess("permitAll()")
-                .addTokenEndpointAuthenticationFilter(authenticationFilter);
-    }
-
-    @Bean
-    public JwtAccessTokenConverter jwtAccessTokenConverter() {
-        JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-        jwtAccessTokenConverter.setSigningKey("asdf&*&2yv%%Fcyvq++eh2i");
-        return jwtAccessTokenConverter;
+                // 获取公钥端点，默认拒绝访问，需要公开
+                .tokenKeyAccess("permitAll()")
+                // 检查 token 端点，需要认证后才允许访问，默认拒绝访问
+                .checkTokenAccess("isAuthenticated()")
+                .authenticationEntryPoint(authenticationEntryPoint);
+                //.addTokenEndpointAuthenticationFilter(authenticationFilter);
     }
 }

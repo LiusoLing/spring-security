@@ -1,54 +1,85 @@
 package com.zjy.oauth2server.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
- * @Desc  
- * @author  liugenlai
- * @since 2021-07-21 15:29 
- */
+ * 权限信息
+ * @author: stars
+ * @date 2020年 07月 09日 11:59
+ **/
 @Data
-@TableName(value ="sys_permission")
-public class SysPermission  implements Serializable {
+public class SysPermission implements Serializable {
 
-	private static final long serialVersionUID =  8835707452491036203L;
+    @TableId(type = IdType.AUTO)
+    private Long id;
 
-   	@TableId(value = "id", type = IdType.AUTO)
-	private Integer id;
+    /**
+     * 父资源id,给它初始值 0
+     * 新增和修改页面上默认的父资源id
+     */
+    private Long parentId = 0L ;
+    /**
+     * 用于新增和修改页面上默认的根菜单名称
+     */
+    @TableField(exist = false)
+    private String parentName = "根菜单";
 
-	/**
-	 * 父权限
-	 */
-	private Integer parentId;
+    /**
+     * 名称
+     */
+    private String name;
 
-	/**
-	 * 权限名称
-	 */
-	private String name;
+    private String code;
 
-	/**
-	 * 权限英文名称
-	 */
-	private String enname;
+    /**
+     * 访问地址
+     */
+    private String url;
 
-	/**
-	 * 授权路径
-	 */
-	private String url;
+    /**
+     * 菜单：1，按钮：2
+     */
+    private Integer type;
 
-	/**
-	 * 备注
-	 */
-	private String description;
+    /**
+     * 图标
+     */
+    private String icon;
 
-	private Date created;
+    /**
+     * 描述
+     */
+    private String remark;
 
-	private Date updated;
+    /**
+     * 创建时间
+     */
+    private Date createDate;
 
+    /**
+     * 更改时间
+     */
+    private Date updateDate;
+
+
+    /**
+     * 所有子权限对象集合
+     * 左侧菜单渲染时要用
+     */
+    @TableField(exist = false)
+    private List<SysPermission> children;
+
+    /**
+     * 所有子权限 URL 集合
+     * 左侧菜单渲染时要用
+     */
+    @TableField(exist = false)
+    private List<String> childrenUrl;
 }
