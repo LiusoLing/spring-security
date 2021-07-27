@@ -26,6 +26,7 @@ public class CustomAuthenticationEntryPoint extends OAuth2AuthenticationEntryPoi
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e)
             throws IOException {
         log.error("请求访问：{}，认证失败，无法访问系统资源", request.getRequestURI());
+        log.error("e: {}", e);
         response.setStatus(200);
         // 允许跨域
         response.setHeader("Access-Control-Allow-Origin", "*");

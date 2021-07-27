@@ -1,17 +1,26 @@
 package com.zjy.oauth2server.controller;
 
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
 import com.wf.captcha.SpecCaptcha;
 import com.wf.captcha.base.Captcha;
 import com.zjy.oauth2server.pojo.constants.SysConstants;
 import com.zjy.platform.common.core.result.Result;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.IOUtils;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.security.KeyPair;
 import java.security.Principal;
+import java.security.interfaces.RSAPublicKey;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,8 +31,10 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class AuthController {
     private final RedisTemplate<String, String> redisTemplate;
+    private final KeyPair keyPair;
 
     @GetMapping("/current")
+    @PreAuthorize("hasAuthority('sys:user:delete')")
     public Result userInfo(Principal principal) {
         return Result.success(principal);
     }
@@ -48,10 +59,23 @@ public class AuthController {
         specCaptcha.out(response.getOutputStream());
     }
 
+    @GetMapping("/.well-known/jwks.json")
+    public Result jwksJson() {
+        RSAPublicKey publicKey = (RSAPublicKey) this.keyPair.getPublic();
+        RSAKey key = new RSAKey.Builder(publicKey).build();
+        return Result.success(new JWKSet(key).toJSONObject());
+    }
+
     @GetMapping("/oauth/token_key")
-    public Result tokenKey() {
+    public Result tokenKey() throws IOException {
+        ClassPathResource resource = new ClassPathResource("public.txt");
+        String publicKey = IOUtils.toString(resource.getInputStream(), "UTF-8");
+        return Result.success(publicKey);
+    }
 
-
-        return null;
+    public static void main(String[] args) {
+        System.out.println(new BCryptPasswordEncoder().encode("qwer"));
+        System.out.println(new BCryptPasswordEncoder().matches("123456",
+                "$2a$10$N.k6Q38FB0tlqyb3Af..se98ENWUnl3OB6b0RNtj8C6KH75Jo5V6a"));
     }
 }

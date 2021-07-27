@@ -1,6 +1,7 @@
 package com.zjy.oauth2server.config.token;
 
 import com.zjy.oauth2server.config.converter.CustomUserAuthenticationConverter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -13,6 +14,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 
 import java.io.IOException;
+import java.security.KeyPair;
 
 /**
  * @author liugenlai
@@ -21,7 +23,10 @@ import java.io.IOException;
 @Slf4j
 @Configuration
 @ConditionalOnProperty(prefix = "zjy.security.oauth2", name = "type", havingValue = "jwt",matchIfMissing = true)
+@RequiredArgsConstructor
 public class JwtTokenStore {
+    private final KeyPair keyPair;
+
     /**
      * 指定令牌管理方式
      * @param jwtAccessTokenConverter
@@ -42,10 +47,7 @@ public class JwtTokenStore {
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter(){
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        // 使用私钥加密，第1个参数就是密钥证书文件，第2个参数 密钥口令(-keypass), 私钥进行签名
-        KeyStoreKeyFactory factory = new KeyStoreKeyFactory(new ClassPathResource("oauth2.jks"), "oauth2".toCharArray());
-        // 指定非对称加密 oauth2 别名
-        converter.setKeyPair(factory.getKeyPair("oauth2"));
+        converter.setKeyPair(keyPair);
         // 使用公钥解密
         ClassPathResource resource = new ClassPathResource("public.txt");
         String publicKey = null;

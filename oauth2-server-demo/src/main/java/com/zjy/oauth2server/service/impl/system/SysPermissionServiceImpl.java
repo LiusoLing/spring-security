@@ -26,8 +26,6 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
             return null;
         }
         List<SysPermission> permissionList = baseMapper.selectPermissionByUserId(userId);
-        // 如果没有权限，则将集合中的数据null移除
-//        permissionList.remove(null);
         return permissionList;
     }
 

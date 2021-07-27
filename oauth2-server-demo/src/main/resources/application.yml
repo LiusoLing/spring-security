@@ -1,3 +1,6 @@
+server:
+  port: 8081
+
 spring:
 #  application:
 #    name: oauth2-server-rbac
@@ -57,14 +60,15 @@ logging:
       zjy:
         oauth2server:
           mapper: debug
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%t]){faint} %clr(%-40.40logger{39}){cyan}[%clr(%line)]    %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}"
+#    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39}[lineno:%line]: %m%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}"
 
 ## security 配置
 zjy:
   security:
     oauth2:
-      type: db
-    filter:
-      urls: /captcha
+      type: redis
 #    client:
 #      # 客户端 id
 #      resourceId: product

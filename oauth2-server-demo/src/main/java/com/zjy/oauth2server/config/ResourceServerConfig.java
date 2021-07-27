@@ -5,6 +5,7 @@ import com.zjy.oauth2server.exception.CustomAuthenticationEntryPoint;
 import com.zjy.oauth2server.pojo.constants.SecurityProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
@@ -17,7 +18,8 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
  * @since 2021/7/23 16:26
  */
 @Configuration
-@EnableResourceServer
+@EnableResourceServer()
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     private final SecurityProperties properties;

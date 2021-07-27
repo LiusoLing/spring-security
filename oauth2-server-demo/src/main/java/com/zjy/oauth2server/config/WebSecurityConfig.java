@@ -12,6 +12,8 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * 安全配置类
@@ -53,6 +55,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 // 认证服务器相关资源全部放行，用于处理认证
                 .authorizeRequests()
+                .antMatchers("/oauth/**").permitAll()
                 //.antMatchers("/api/**").authenticated()
                 .anyRequest().authenticated()
                 .and()
@@ -62,21 +65,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().disable()
                 // 注销处理
                 .logout()
+                .and()
+                // IF_REQUIRED 可以支持所有的oauth2认证方式，STATELESS支持 密码、客户端等模式
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 // 自定义退出时处理程序
                 //.logoutSuccessHandler(new OauthLogoutSuccessHandler())
                 // 退出清楚缓存
                 //.addLogoutHandler(oauthLogoutHandler)
                 // 指定是否在注销用户时清除，默认为false
                 ;
-
-        // 基于密码 等模式可以无session,不支持授权码模式
-        if (authenticationEntryPoint != null) {
-            // 在spring security配置中禁用session。请求接口后，浏览器的cookie中还是有JSESSIONID，spring boot 内置的Tomcat中还是创建了session，
-            http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        } else {
-            // 授权码模式单独处理，需要session的支持，此模式可以支持所有oauth2的认证
-            http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
-        }
     }
 
 
@@ -104,6 +101,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         web
                 .ignoring()
                 .antMatchers("/resources/**", "/static/**", "/public/**",
-                        "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/captcha");
+                        "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/captcha", "/.well-known/jwks.json");
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
