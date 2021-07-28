@@ -20,6 +20,7 @@ public class RedisTokenStore {
 
     /**
      * 指定令牌管理方式为 Redis
+     *
      * @return
      */
     @Bean

@@ -15,6 +15,7 @@ import java.util.List;
 
 /**
  * 用户信息
+ *
  * @author: stars
  * @date 2020年 07月 09日 11:45
  **/
@@ -37,7 +38,7 @@ public class SysUser implements UserDetails {
     /**
      * 帐户是否过期(true(1) 未过期，false(0)已过期)
      * 设置默认值为true，新增用户默认未过期
-     *
+     * <p>
      * 注意：生成的setter和getter方法没有 `is`
      * setAccountNonExpired
      * getAccountNonExpired
@@ -90,6 +91,7 @@ public class SysUser implements UserDetails {
 
     /**
      * 拥有权限集合
+     *
      * @TableField(exist = false) 该属性不是数据库表字段
      */
     @TableField(exist = false)
@@ -97,6 +99,7 @@ public class SysUser implements UserDetails {
 
     /**
      * 父接口认证方法 start
+     *
      * @return
      */
     @Override
@@ -135,10 +138,11 @@ public class SysUser implements UserDetails {
      */
     @TableField(exist = false)
     private List<Long> roleIds = new ArrayList<Long>();
+
     public List<Long> getRoleIds() {
-        if(CollectionUtils.isNotEmpty(roleList)) {
+        if (CollectionUtils.isNotEmpty(roleList)) {
             roleIds = new ArrayList<Long>();
-            for(SysRole role : roleList) {
+            for (SysRole role : roleList) {
                 roleIds.add(role.getId());
             }
         }

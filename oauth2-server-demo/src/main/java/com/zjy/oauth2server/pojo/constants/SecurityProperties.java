@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  * 权限配置类，所有权限的相关配置都归纳在这里
+ *
  * @author liugenlai
  * @since 2021/7/26 11:17
  */
@@ -32,7 +33,7 @@ public class SecurityProperties {
     /**
      * 客户端先关信息
      */
-    private ClientProperties client = new ClientProperties() ;
+    private ClientProperties client = new ClientProperties();
 
     @Setter
     @Getter
@@ -45,7 +46,7 @@ public class SecurityProperties {
         private UrlPermissionProperties urlPermission = new UrlPermissionProperties();
 
         // token管理方式: db、jwt、redis
-        private String type ;
+        private String type;
     }
 
     @Getter

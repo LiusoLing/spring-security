@@ -13,6 +13,7 @@ public interface SysPermissionService extends IService<SysPermission> {
 
     /**
      * 通过用户id查询所拥有权限
+     *
      * @param userId
      * @return
      */

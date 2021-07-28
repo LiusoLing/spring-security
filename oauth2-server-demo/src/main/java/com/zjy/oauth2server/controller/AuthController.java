@@ -13,7 +13,10 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
@@ -32,11 +35,19 @@ import java.util.concurrent.TimeUnit;
 public class AuthController {
     private final RedisTemplate<String, String> redisTemplate;
     private final KeyPair keyPair;
+    private final ConsumerTokenServices tokenServices;
 
     @GetMapping("/current")
     @PreAuthorize("hasAuthority('sys:user:delete')")
+    @ApiOperation("当前登录用户信息")
     public Result userInfo(Principal principal) {
         return Result.success(principal);
+    }
+
+    @GetMapping("/hello")
+    @PreAuthorize("hasRole('operator')")
+    public Result hello() {
+        return Result.success("Hello world");
     }
 
     @GetMapping("/captcha")
@@ -60,6 +71,7 @@ public class AuthController {
     }
 
     @GetMapping("/.well-known/jwks.json")
+    @ApiOperation("json格式的公钥")
     public Result jwksJson() {
         RSAPublicKey publicKey = (RSAPublicKey) this.keyPair.getPublic();
         RSAKey key = new RSAKey.Builder(publicKey).build();
@@ -67,10 +79,18 @@ public class AuthController {
     }
 
     @GetMapping("/oauth/token_key")
+    @ApiOperation("文本格式的公钥")
     public Result tokenKey() throws IOException {
         ClassPathResource resource = new ClassPathResource("public.txt");
         String publicKey = IOUtils.toString(resource.getInputStream(), "UTF-8");
         return Result.success(publicKey);
+    }
+
+    @PostMapping("/oauth/logout")
+    @ApiOperation("登出账号")
+    public Result logOut(@RequestParam("access_token") String accessToken) {
+        tokenServices.revokeToken(accessToken);
+        return Result.success("登出成功");
     }
 
     public static void main(String[] args) {

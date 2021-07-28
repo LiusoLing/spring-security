@@ -68,12 +68,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 // IF_REQUIRED 可以支持所有的oauth2认证方式，STATELESS支持 密码、客户端等模式
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                // 自定义退出时处理程序
-                //.logoutSuccessHandler(new OauthLogoutSuccessHandler())
-                // 退出清楚缓存
-                //.addLogoutHandler(oauthLogoutHandler)
-                // 指定是否在注销用户时清除，默认为false
-                ;
+        // 自定义退出时处理程序
+        //.logoutSuccessHandler(new OauthLogoutSuccessHandler())
+        // 退出清楚缓存
+        //.addLogoutHandler(oauthLogoutHandler)
+        // 指定是否在注销用户时清除，默认为false
+        ;
     }
 
 
@@ -94,6 +94,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      * http.permitAll 方法不会绕开spring security的过滤器验证，相当于只是允许该路径通过过滤器
      * web.ignoring 是直接绕开spring security的所有filter，直接跳过验证
      * /captcha 验证码接口
+     *
      * @param web
      */
     @Override

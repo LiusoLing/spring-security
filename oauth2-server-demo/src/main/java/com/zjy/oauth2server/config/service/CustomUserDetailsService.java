@@ -15,7 +15,7 @@ public class CustomUserDetailsService extends AbstractUserDetailsService {
     private final SysUserService sysUserService;
 
     @Override
-    SysUser findSysUser(String usernameOrMobile){
+    SysUser findSysUser(String usernameOrMobile) {
         return sysUserService.findByUsername(usernameOrMobile);
     }
 }

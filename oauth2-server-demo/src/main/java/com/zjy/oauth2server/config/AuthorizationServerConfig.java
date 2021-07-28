@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 
 /**
  * 认证授权 配置类
+ *
  * @author liugenlai
  * @since 2021/7/23 16:25
  */
@@ -53,6 +54,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
      *     <li>refresh_token：刷新令牌</li>
      * </ul>
      * </p>
+     *
      * @return
      */
     @Bean
@@ -62,10 +64,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     /**
      * 使用 jdbcClientDetailsService
+     *
      * @return
      */
     @Bean
-    public ClientDetailsService jdbcClientDetailsService(){
+    public ClientDetailsService jdbcClientDetailsService() {
         JdbcClientDetailsService service = new JdbcClientDetailsService(dataSource);
         service.setPasswordEncoder(passwordEncoder);
         return service;
@@ -75,6 +78,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
      * 允许访问此认证服务器的客户端详情信息配置
      * 方式1：内存方式管理（inMemory/redis）
      * 方式2：数据库管理（db）
+     *
      * @param clients
      * @throws Exception
      */
@@ -85,6 +89,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     /**
      * 认证服务器端点配置
+     *
      * @param endpoints
      * @throws Exception
      */
@@ -110,6 +115,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     /**
      * 端点的安全配置
+     *
      * @param security
      * @throws Exception
      */
@@ -121,6 +127,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 // 检查 token 端点，需要认证后才允许访问，默认拒绝访问
                 .checkTokenAccess("isAuthenticated()")
                 .authenticationEntryPoint(authenticationEntryPoint);
-                //.addTokenEndpointAuthenticationFilter(authenticationFilter);
+        //.addTokenEndpointAuthenticationFilter(authenticationFilter);
     }
 }

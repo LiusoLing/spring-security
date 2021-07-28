@@ -2,9 +2,9 @@ server:
   port: 8081
 
 spring:
-#  application:
-#    name: oauth2-server-rbac
-## 数据库配置
+  #  application:
+  #    name: oauth2-server-rbac
+  ## 数据库配置
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -20,10 +20,10 @@ spring:
       max-lifetime: 1800000
       connection-timeout: 30000
       connection-test-query: SELECT 1
-## 覆盖重复bean配置
+  ## 覆盖重复bean配置
   main:
     allow-bean-definition-overriding: true
-## Redis 配置
+  ## Redis 配置
   redis:
     host: 192.168.18.195
     port: 32268

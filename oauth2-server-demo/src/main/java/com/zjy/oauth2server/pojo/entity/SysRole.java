@@ -13,6 +13,7 @@ import java.util.List;
 
 /**
  * 角色信息
+ *
  * @author: stars
  * @date 2020年 07月 09日 11:55
  **/
@@ -47,9 +48,9 @@ public class SysRole implements Serializable {
     private List<Long> perIds = new ArrayList<Long>();
 
     public List<Long> getPerIds() {
-        if(CollectionUtils.isNotEmpty(perList)) {
-            perIds =new ArrayList<Long>();
-            for(SysPermission per : perList) {
+        if (CollectionUtils.isNotEmpty(perList)) {
+            perIds = new ArrayList<Long>();
+            for (SysPermission per : perList) {
                 perIds.add(per.getId());
             }
         }

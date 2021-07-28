@@ -11,6 +11,7 @@ public interface SysUserService extends IService<SysUser> {
 
     /**
      * 通过用户名查询
+     *
      * @param username 用户名
      * @return 用户信息
      */
@@ -18,6 +19,7 @@ public interface SysUserService extends IService<SysUser> {
 
     /**
      * 通过手机号查询
+     *
      * @param mobile 手机号
      * @return 用户信息
      */

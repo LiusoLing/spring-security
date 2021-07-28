@@ -17,6 +17,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     /**
      * 通过手机号查询
+     *
      * @param mobile 手机号
      * @return 用户信息
      */
@@ -27,12 +28,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     /**
      * 通过用户名查询
+     *
      * @param username 用户名
      * @return 用户信息
      */
     @Override
     public SysUser findByUsername(String username) {
-        if(StringUtils.isEmpty(username)) {
+        if (StringUtils.isEmpty(username)) {
             return null;
         }
         QueryWrapper queryWrapper = new QueryWrapper();

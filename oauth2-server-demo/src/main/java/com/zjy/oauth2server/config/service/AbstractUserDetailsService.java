@@ -24,6 +24,7 @@ public abstract class AbstractUserDetailsService implements UserDetailsService {
 
     /**
      * 每次登录都会调用这个方法验证用户信息
+     *
      * @param username
      * @return
      * @throws UsernameNotFoundException
@@ -39,6 +40,7 @@ public abstract class AbstractUserDetailsService implements UserDetailsService {
 
     /**
      * 查询用户信息
+     *
      * @param usernameOrMobile 用户或手机号
      * @return
      * @throws UsernameNotFoundException
@@ -47,18 +49,19 @@ public abstract class AbstractUserDetailsService implements UserDetailsService {
 
     /**
      * 查询认证信息
+     *
      * @param sysUser
      * @throws UsernameNotFoundException
      */
     public void findSysPermission(SysUser sysUser) throws UsernameNotFoundException {
-        if(sysUser == null) {
+        if (sysUser == null) {
             throw new UsernameNotFoundException("未查询到有效用户信息");
         }
 
         // 2. 查询该用户有哪一些权限
         List<SysPermission> sysPermissions = sysPermissionService.findByUserId(sysUser.getId());
         // 无权限
-        if(CollectionUtils.isEmpty(sysPermissions)) {
+        if (CollectionUtils.isEmpty(sysPermissions)) {
             return;
         }
         // 存入权限,认证通过后用于渲染左侧菜单

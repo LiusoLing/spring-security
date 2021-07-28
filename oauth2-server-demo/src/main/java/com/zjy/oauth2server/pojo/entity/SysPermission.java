@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * 权限信息
+ *
  * @author: stars
  * @date 2020年 07月 09日 11:59
  **/
@@ -24,7 +25,7 @@ public class SysPermission implements Serializable {
      * 父资源id,给它初始值 0
      * 新增和修改页面上默认的父资源id
      */
-    private Long parentId = 0L ;
+    private Long parentId = 0L;
     /**
      * 用于新增和修改页面上默认的根菜单名称
      */

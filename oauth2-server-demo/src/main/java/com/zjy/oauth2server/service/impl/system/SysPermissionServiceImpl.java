@@ -17,6 +17,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 
     /**
      * 通过用户id查询所拥有权限
+     *
      * @param userId
      * @return
      */

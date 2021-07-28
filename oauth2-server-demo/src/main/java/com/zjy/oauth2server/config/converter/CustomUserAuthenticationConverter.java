@@ -17,6 +17,7 @@ import java.util.Map;
 /**
  * 优化自org.springframework.security.oauth2.provider.token.DefaultUserAuthenticationConverter
  * jwt返回的principal改为返回SysUser，增加扩展字段
+ *
  * @author: stars
  * @date 2020年 07月 10日 13:12
  **/
@@ -58,6 +59,7 @@ public class CustomUserAuthenticationConverter implements UserAuthenticationConv
 
     /**
      * 包含客户端和用户基本信息，但是信息并不全面。
+     *
      * @param map 客户端和用户基本信息
      * @return
      */
@@ -74,9 +76,9 @@ public class CustomUserAuthenticationConverter implements UserAuthenticationConv
                 authorities = user.getAuthorities();
                 principal = user;
             } else {
-                Integer id = (Integer)map.get("id");
+                Integer id = (Integer) map.get("id");
                 SysUser user = new SysUser();
-                user.setUsername((String)principal);
+                user.setUsername((String) principal);
                 // map集合中并没有这个id
                 // user.setId(Long.valueOf(id));
                 principal = user;

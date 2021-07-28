@@ -21,10 +21,11 @@ public class DbTokenStore {
 
     /**
      * 指定数据库方式管理 令牌
+     *
      * @return
      */
     @Bean
-    public TokenStore tokenStore(){
+    public TokenStore tokenStore() {
         return new JdbcTokenStore(dataSource);
     }
 }
