@@ -23,7 +23,10 @@ import javax.sql.DataSource;
 
 /**
  * 认证授权 配置类
- *
+ * 核心：
+ * AuthorizationServerSecurityConfigurer：安全功能配置器
+ * AuthorizationServerEndpointsConfigurer：端点配置器（配置授权服务器端点的非安全功能，如令牌存储、令牌定制，用户批准和授权类型等）
+ * ClientDetailsServiceConfigurer：客户端信息配置器
  * @author liugenlai
  * @since 2021/7/23 16:25
  */
@@ -44,7 +47,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
 
     /**
-     * 从数据库获取授权码策略：authentication_code,password......
+     * 从数据库获取授权码策略：
      * <p>authorizedGrantTypes授权类型, 可同时支持多种授权类型
      * <ul>
      *     <li>authorization_code：授权码模式</li>

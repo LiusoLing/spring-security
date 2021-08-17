@@ -1,7 +1,7 @@
 package com.zjy.oauth2server.config.service;
 
-import com.zjy.oauth2server.pojo.entity.SysPermission;
-import com.zjy.oauth2server.pojo.entity.SysUser;
+import com.zjy.oauth2server.pojo.entity.system.SysPermission;
+import com.zjy.oauth2server.pojo.entity.system.SysUser;
 import com.zjy.oauth2server.service.system.SysPermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;

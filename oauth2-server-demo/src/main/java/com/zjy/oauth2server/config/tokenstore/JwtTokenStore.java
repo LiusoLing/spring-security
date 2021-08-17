@@ -1,4 +1,4 @@
-package com.zjy.oauth2server.config.token;
+package com.zjy.oauth2server.config.tokenstore;
 
 import com.zjy.oauth2server.config.converter.CustomUserAuthenticationConverter;
 import lombok.RequiredArgsConstructor;

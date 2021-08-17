@@ -1,7 +1,7 @@
 package com.zjy.oauth2server.mapper.system;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.zjy.oauth2server.pojo.entity.SysPermission;
+import com.zjy.oauth2server.pojo.entity.system.SysPermission;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

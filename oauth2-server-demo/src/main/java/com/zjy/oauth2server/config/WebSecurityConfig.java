@@ -99,10 +99,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     public void configure(WebSecurity web) {
-        web
-                .ignoring()
-                .antMatchers("/resources/**", "/static/**", "/public/**",
-                        "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/captcha", "/.well-known/jwks.json");
+        web.ignoring().antMatchers("/resources/**", "/static/**", "/public/**",
+                "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/captcha", "/.well-known/jwks.json");
     }
 
     @Bean

@@ -2,7 +2,7 @@ package com.zjy.oauth2server.service.impl.system;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zjy.oauth2server.mapper.system.SysPermissionMapper;
-import com.zjy.oauth2server.pojo.entity.SysPermission;
+import com.zjy.oauth2server.pojo.entity.system.SysPermission;
 import com.zjy.oauth2server.service.system.SysPermissionService;
 import org.springframework.stereotype.Service;
 

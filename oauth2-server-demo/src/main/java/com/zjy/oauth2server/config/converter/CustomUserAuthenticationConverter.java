@@ -1,6 +1,6 @@
 package com.zjy.oauth2server.config.converter;
 
-import com.zjy.oauth2server.pojo.entity.SysUser;
+import com.zjy.oauth2server.pojo.entity.system.SysUser;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,7 +18,7 @@ import java.util.Map;
  * 优化自org.springframework.security.oauth2.provider.token.DefaultUserAuthenticationConverter
  * jwt返回的principal改为返回SysUser，增加扩展字段
  *
- * @author: stars
+ * @author: liusongling
  * @date 2020年 07月 10日 13:12
  **/
 public class CustomUserAuthenticationConverter implements UserAuthenticationConverter {

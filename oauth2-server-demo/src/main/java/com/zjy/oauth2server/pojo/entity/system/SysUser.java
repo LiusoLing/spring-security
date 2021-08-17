@@ -1,4 +1,4 @@
-package com.zjy.oauth2server.pojo.entity;
+package com.zjy.oauth2server.pojo.entity.system;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

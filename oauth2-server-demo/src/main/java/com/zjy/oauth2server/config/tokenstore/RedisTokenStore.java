@@ -1,7 +1,6 @@
-package com.zjy.oauth2server.config.token;
+package com.zjy.oauth2server.config.tokenstore;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

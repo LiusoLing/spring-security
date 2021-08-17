@@ -1,7 +1,7 @@
 package com.zjy.oauth2server.service.system;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.zjy.oauth2server.pojo.entity.SysRole;
+import com.zjy.oauth2server.pojo.entity.system.SysRole;
 
 /**
  * @author liugenlai

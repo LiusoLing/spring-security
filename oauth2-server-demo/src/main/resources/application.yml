@@ -10,7 +10,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/oauth2_demo?characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
-    password: 123456
+    # password: 123456
+    password: mysql_0215
     hikari:
       minimum-idle: 5
       idle-timeout: 600000
@@ -23,11 +24,17 @@ spring:
   ## 覆盖重复bean配置
   main:
     allow-bean-definition-overriding: true
-  ## Redis 配置
+  ## 公司Redis 配置
+#  redis:
+#    host: 192.168.18.195
+#    port: 32268
+#    password: itszhongxin
+
+  ## 本都Redis配置
   redis:
-    host: 192.168.18.195
-    port: 32268
-    password: itszhongxin
+    host: 127.0.0.1
+    port: 6379
+    password:
   mvc:
     locale: zh_CN
 
