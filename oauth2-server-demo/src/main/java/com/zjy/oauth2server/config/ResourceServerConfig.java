@@ -33,6 +33,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         // 当前资源服务器的资源id，认证服务会认证客户端有没有访问这个资源id的权限，有则可以访问当前服务
         resources.resourceId(properties.getClient().getResourceId())
                 .tokenStore(tokenStore)
-                .authenticationEntryPoint(authenticationEntryPoint);
+                // 资源服务器认证异常信息处理：配置OAuth2AuthenticationEntryPoint自定义异常类，并重写commence方法返回自定义Oauth2认证异常信息
+                .authenticationEntryPoint(authenticationEntryPoint)
+                // 资源服务器权限异常信息处理：配置AccessDeniedHandler自定义异常类，并重写handle方法返回自定义oauth2权限异常信息
+                .accessDeniedHandler(accessDeniedHandler)
+                .stateless(false);
     }
 }

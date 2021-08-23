@@ -1,17 +1,19 @@
 package com.zjy.oauth2server.config;
 
-import com.zjy.oauth2server.config.service.CustomUserDetailsService;
+import com.zjy.oauth2server.config.provider.CustomUserAuthenticationProvider;
 import com.zjy.oauth2server.exception.CustomAccessDeniedHandler;
 import com.zjy.oauth2server.exception.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -24,19 +26,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    private final CustomUserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
 
     /**
-     * 配置用户信息，数据库方式/内存方式
+     * 配置身份认证管理器初始化时指定一些配置
      *
      * @param auth
      * @throws Exception
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
+        auth.userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder())
+                .and()
+                .authenticationProvider(userAuthenticationProvider());
     }
 
     /**
@@ -53,10 +58,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
+                .requestMatchers().anyRequest().and()
                 // 认证服务器相关资源全部放行，用于处理认证
                 .authorizeRequests()
-                .antMatchers("/oauth/**").permitAll()
-                //.antMatchers("/api/**").authenticated()
+                //.antMatchers("/oauth/*").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
@@ -107,4 +112,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
+    @Bean
+    public AuthenticationProvider userAuthenticationProvider() {
+        return new CustomUserAuthenticationProvider();
+    }
+
 }

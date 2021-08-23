@@ -2,6 +2,7 @@ package com.zjy.oauth2server.pojo.constants;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,9 @@ import java.util.List;
 @Component
 @ConfigurationProperties(prefix = "zjy.security")
 public class SecurityProperties {
+
+    @Value("${spring.application.name:application}")
+    private String applicationName;
 
     /**
      * 认证相关配置
@@ -66,14 +70,14 @@ public class SecurityProperties {
 
     @Setter
     @Getter
-    public class ValidateCodeProperties {
+    public static class ValidateCodeProperties {
         // 设置认证通时不需要验证码的clientId
         private String[] ignoreClientCode = {};
     }
 
     @Getter
     @Setter
-    public class ClientProperties {
+    public static class ClientProperties {
         // 当前资源服务器的资源id，认证服务会认证客户端有没有访问这个资源id的权限，有则可以访问当前服务
         private String resourceId = "product";
     }

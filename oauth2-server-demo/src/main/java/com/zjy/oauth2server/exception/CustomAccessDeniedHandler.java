@@ -2,6 +2,7 @@ package com.zjy.oauth2server.exception;
 
 import cn.hutool.json.JSONUtil;
 import com.zjy.platform.common.core.result.Result;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
@@ -15,20 +16,20 @@ import java.io.IOException;
  * @author liugenlai
  * @since 2021/7/26 16:50
  */
+@Slf4j
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response,
-                       AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        response.setStatus(200);
-        // 允许跨域
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        // 允许自定义请求头token(允许head跨域)
-        response.setHeader("Access-Control-Allow-Headers", "Authorization, authorization,token, Accept, Origin, X-Requested-With, Content-Type, Last-Modified");
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException e) throws IOException, ServletException {
+        log.error("请求访问：{} 异常", request.getRequestURI());
+        log.error("e: {}", e);
+        response.setHeader("Cache-Control", "no-store");
+        response.setHeader("Pragma", "no-cache");
         response.setHeader("Content-type", "application/json;charset=UTF-8");
-        response.setContentType("application/json");
-        response.setCharacterEncoding("utf-8");
-        response.getWriter().print(JSONUtil.toJsonStr(Result.failed("没有访问权限!")));
+        Result<Object> failed = Result.failed();
+        failed.setError(e.getLocalizedMessage());
+        failed.setData(e.getCause());
+        response.getWriter().print(JSONUtil.toJsonStr(failed));
     }
 
 }

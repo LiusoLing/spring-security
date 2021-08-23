@@ -12,12 +12,15 @@ public class SysConstants {
     /**
      * 验证码redis key
      */
-    public static final String CAPTCHA_REDIS_KEY = "property-city:captcha:%s";
+    public static final String CAPTCHA_REDIS_KEY = "%s:captcha:%s";
+    /**
+     * token黑名单
+     */
+    public static final String TOKEN_BLACKLIST_PREFIX = "%s:token-blacklist:%s";
     /**
      * 登录认证Header
      */
     public static final String AUTHORIZATION_HEADER = "Authorization";
-
     /**
      * 斜杆
      */

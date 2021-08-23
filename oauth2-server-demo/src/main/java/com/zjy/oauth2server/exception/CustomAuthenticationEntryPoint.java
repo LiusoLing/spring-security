@@ -25,17 +25,15 @@ public class CustomAuthenticationEntryPoint extends OAuth2AuthenticationEntryPoi
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e)
             throws IOException {
-        log.error("请求访问：{}，认证失败，无法访问系统资源", request.getRequestURI());
+        log.error("请求访问：{} 异常", request.getRequestURI());
         log.error("e: {}", e);
-        response.setStatus(200);
-        // 允许跨域
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        // 允许自定义请求头token(允许head跨域)
-        response.setHeader("Access-Control-Allow-Headers", "Authorization, authorization,token, Accept, Origin, X-Requested-With, Content-Type, Last-Modified");
+        response.setHeader("Cache-Control", "no-store");
+        response.setHeader("Pragma", "no-cache");
         response.setHeader("Content-type", "application/json;charset=UTF-8");
-        response.setContentType("application/json");
-        response.setCharacterEncoding("utf-8");
-        response.getWriter().print(JSONUtil.toJsonStr(Result.failed("认证失败，无法访问系统资源")));
+        Result<Object> failed = Result.failed();
+        failed.setError(e.getLocalizedMessage());
+        failed.setData(e.getCause());
+        response.getWriter().print(JSONUtil.toJsonStr(failed));
     }
 }
 

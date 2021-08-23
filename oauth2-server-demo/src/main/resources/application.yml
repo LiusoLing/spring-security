@@ -10,8 +10,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/oauth2_demo?characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
-    # password: 123456
-    password: mysql_0215
+    password: 123456
+    #password: mysql_0215
     hikari:
       minimum-idle: 5
       idle-timeout: 600000
@@ -24,17 +24,19 @@ spring:
   ## 覆盖重复bean配置
   main:
     allow-bean-definition-overriding: true
+  freemarker:
+    checkTemplateLocation: false
   ## 公司Redis 配置
-#  redis:
-#    host: 192.168.18.195
-#    port: 32268
-#    password: itszhongxin
+  redis:
+    host: 192.168.18.195
+    port: 32268
+    password: itszhongxin
 
   ## 本都Redis配置
-  redis:
-    host: 127.0.0.1
-    port: 6379
-    password:
+#  redis:
+#    host: 127.0.0.1
+#    port: 6379
+#    password:
   mvc:
     locale: zh_CN
 
@@ -56,7 +58,9 @@ mybatis-plus:
     jdbc-type-for-null: null
   mapper-locations: classpath*:mapper/*Mapper.xml
 
+
 ## 日志配置
+#debug: true
 logging:
   level:
     org:
@@ -75,7 +79,7 @@ logging:
 zjy:
   security:
     oauth2:
-      type: redis
+      type: jwt
 #    client:
 #      # 客户端 id
 #      resourceId: product

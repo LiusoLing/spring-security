@@ -8,4 +8,5 @@ import com.zjy.oauth2server.pojo.entity.oauth2.Client;
  * @since 2021-08-17 22:47:54
  */
 public interface ClientService extends IService<Client> {
+
 }

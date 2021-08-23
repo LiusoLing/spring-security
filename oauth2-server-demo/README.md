@@ -1,4 +1,6 @@
-目标： 
+知识点：
+
+主要目标： 
 1、tokenStore 可配置，自由选择想要的 token 存储方式：数据库存储，jwt存储，Redis缓存存储 
 2、JwtToken模式下秘钥、密码采用 RSA 非对称加密算法 
 3、clientService 支持多种授权模式：授权码授权、密码模式、客户端模式、简单模式 
@@ -96,3 +98,6 @@ keytool -list -rfc --keystore oauth2.jks | openssl x509 -inform pem -pubkey
 ```shell
 keytool -list -v -keystore oauth2.jks
 ```
+
+不同模式下验证token时需要传递的参数是不一样的，具体可以参考此 issue
+https://github.com/royclarkson/spring-rest-service-oauth/issues/28

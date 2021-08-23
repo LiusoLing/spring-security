@@ -1,26 +1,32 @@
 package com.zjy.oauth2server.config.service;
 
-import com.zjy.oauth2server.pojo.entity.system.SysPermission;
-import com.zjy.oauth2server.pojo.entity.system.SysUser;
-import com.zjy.oauth2server.service.system.SysPermissionService;
+import com.zjy.oauth2server.integration.IntegrationAuthentication;
+import com.zjy.oauth2server.integration.IntegrationAuthenticationContext;
+import com.zjy.oauth2server.integration.IntegrationAuthenticator;
+import com.zjy.oauth2server.pojo.entity.oauth2.Authorize;
+import com.zjy.oauth2server.pojo.entity.oauth2.SysUserAuthentication;
+import com.zjy.oauth2server.pojo.entity.oauth2.User;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 抽象用户登录验证实现，必须继承它实现自己的登录验证
+ *
  * @author liugenlai
  * @since 2021/7/26 9:57
  */
 public abstract class AbstractUserDetailsService implements UserDetailsService {
-    @Autowired
-    private SysPermissionService sysPermissionService;
+    private List<IntegrationAuthenticator> authenticators;
+
+    @Autowired(required = false)
+    public void setAuthenticators(List<IntegrationAuthenticator> authenticators) {
+        this.authenticators = authenticators;
+    }
 
     /**
      * 每次登录都会调用这个方法验证用户信息
@@ -31,46 +37,66 @@ public abstract class AbstractUserDetailsService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // 通过请求的用户名去数据库中查询用户信息
-        SysUser sysUser = findSysUser(username);
-        // 查询权限
-        findSysPermission(sysUser);
-        return sysUser;
+        // 判断是否是集成登录
+        IntegrationAuthentication integrationAuthentication = IntegrationAuthenticationContext.get();
+        if (integrationAuthentication == null) {
+            integrationAuthentication = new IntegrationAuthentication();
+        }
+        integrationAuthentication.setUsername(username);
+        // 调用集成验证器自身的验证方法
+        SysUserAuthentication sysUserAuthentication = this.authenticate(integrationAuthentication);
+
+        if(sysUserAuthentication == null){
+            throw new UsernameNotFoundException("用户名或密码错误");
+        }
+
+        User user = new User();
+        BeanUtils.copyProperties(sysUserAuthentication, user);
+        // 填充权限角色信息
+        this.setAuthorize(user);
+        return user;
     }
 
     /**
-     * 查询用户信息
-     *
-     * @param usernameOrMobile 用户或手机号
-     * @return
-     * @throws UsernameNotFoundException
+     * 调用集成验证器自身的验证方法
+     * @param integrationAuthentication 集成登录参数对象
+     * @return SysUserAuthentication
      */
-    abstract SysUser findSysUser(String usernameOrMobile);
+    private SysUserAuthentication authenticate(IntegrationAuthentication integrationAuthentication) {
+        if (this.authenticators != null) {
+            for (IntegrationAuthenticator authenticator : authenticators) {
+                if (authenticator.support(integrationAuthentication)) {
+                    return authenticator.authenticate(integrationAuthentication);
+                }
+            }
+        }
+        return null;
+    }
 
     /**
      * 查询认证信息
      *
-     * @param sysUser
+     * @param user
      * @throws UsernameNotFoundException
      */
-    public void findSysPermission(SysUser sysUser) throws UsernameNotFoundException {
-        if (sysUser == null) {
+    public void setAuthorize(User user) throws UsernameNotFoundException {
+        if (user == null) {
             throw new UsernameNotFoundException("未查询到有效用户信息");
         }
 
-        // 2. 查询该用户有哪一些权限
-        List<SysPermission> sysPermissions = sysPermissionService.findByUserId(sysUser.getId());
+        Authorize authorize = getAuthorize(user.getId());
         // 无权限
-        if (CollectionUtils.isEmpty(sysPermissions)) {
+        if (authorize == null) {
             return;
         }
-        // 存入权限,认证通过后用于渲染左侧菜单
-        sysUser.setPermissions(sysPermissions);
-
-        // 3. 封装用户信息和权限信息
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        // 权限标识
-        sysPermissions.forEach(sp -> authorities.add(new SimpleGrantedAuthority(sp.getCode())));
-        sysUser.setAuthorities(authorities);
+        user.setRoles(authorize.getRoles());
+        user.setResources(authorize.getResources());
     }
+
+    /**
+     * 获取角色和权限列表
+     * @param id 用户ID
+     * @return Authorize
+     */
+    abstract Authorize getAuthorize(Long id);
 }

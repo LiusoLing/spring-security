@@ -1,12 +1,14 @@
 package com.zjy.oauth2server.config;
 
-import com.zjy.oauth2server.config.service.CustomUserDetailsService;
 import com.zjy.oauth2server.exception.CustomAuthenticationEntryPoint;
+import com.zjy.oauth2server.exception.CustomWebResponseExceptionTranslator;
+import com.zjy.oauth2server.integration.IntegrationAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -16,6 +18,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
 import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
+import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
@@ -36,8 +39,8 @@ import javax.sql.DataSource;
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
     private final AuthenticationManager authenticationManager;
-    private final CustomUserDetailsService userDetailsService;
-    // private final IntegrationAuthenticationFilter authenticationFilter;
+    private final UserDetailsService userDetailsService;
+    private final IntegrationAuthenticationFilter authenticationFilter;
     private final TokenStore tokenStore;
     private final DataSource dataSource;
     @Autowired(required = false)
@@ -108,7 +111,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 // 授权码管理策略，针对授权码模式有效，会将授权码放到 auth_code 表，授权后就会删除它
                 .authorizationCodeServices(jdbcAuthorizationCodeServices())
                 // 禁止重复使用 refreshToken
-                .reuseRefreshTokens(false);
+                .reuseRefreshTokens(false)
+                // 认证服务器异常信息处理：配置WebResponseExceptionTranslator自定义异常，并重写translate方法返回自定义Oauth2认证异常信息
+                .exceptionTranslator(webResponseExceptionTranslator());
         // 判断是否使用了 jwt令牌认证 模式
         if (jwtAccessTokenConverter != null) {
             // 指定JWT转换器 accessTokenConverter
@@ -125,11 +130,19 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
         security.allowFormAuthenticationForClients()
-                // 获取公钥端点，默认拒绝访问，需要公开
+                // 获取公钥端点，默认拒绝访问(访问此资源需要完全的身份认证)，需要放行
                 .tokenKeyAccess("permitAll()")
                 // 检查 token 端点，需要认证后才允许访问，默认拒绝访问
                 .checkTokenAccess("isAuthenticated()")
-                .authenticationEntryPoint(authenticationEntryPoint);
-        //.addTokenEndpointAuthenticationFilter(authenticationFilter);
+                .authenticationEntryPoint(authenticationEntryPoint)
+                // 与HttpSecurity的addFilterXYX方法相比,这里没有细粒度的影响,过滤器将位于过滤器链中.
+                // addTokenEndpointAuthenticationFilter添加的任何过滤器都将插入BasicAuthenticationFilter之前
+                .addTokenEndpointAuthenticationFilter(authenticationFilter)
+        ;
+    }
+
+    @Bean
+    public WebResponseExceptionTranslator webResponseExceptionTranslator() {
+        return new CustomWebResponseExceptionTranslator();
     }
 }
