@@ -20,7 +20,7 @@ public class User implements UserDetails, CredentialsContainer {
     private String password;
     private String status;
     private String type;
-    private String phoneNumber;
+    private String mobile;
     private String email;
     private String nickname;
     private Collection<String> resources = new ArrayList<>();
@@ -99,12 +99,12 @@ public class User implements UserDetails, CredentialsContainer {
         this.type = type;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getMobile() {
+        return mobile;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     public String getEmail() {
@@ -145,5 +145,9 @@ public class User implements UserDetails, CredentialsContainer {
 
     public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

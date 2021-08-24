@@ -1,11 +1,10 @@
 package com.zjy.oauth2server.integration;
 
+import cn.hutool.extra.spring.SpringUtil;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
@@ -115,8 +114,9 @@ public class IntegrationAuthenticationFilter extends GenericFilterBean {
      * @param integrationAuthentication 集成认证参数对象
      */
     private void prepare(IntegrationAuthentication integrationAuthentication) {
-        WebApplicationContext applicationContext = ContextLoader.getCurrentWebApplicationContext();
-        Map<String, IntegrationAuthenticator> map = applicationContext.getBeansOfType(IntegrationAuthenticator.class);
+        //WebApplicationContext applicationContext = ContextLoader.getCurrentWebApplicationContext();
+        //Map<String, IntegrationAuthenticator> map = applicationContext.getBeansOfType(IntegrationAuthenticator.class);
+        Map<String, IntegrationAuthenticator> map = SpringUtil.getBeansOfType(IntegrationAuthenticator.class);
         if(map != null){
             this.authenticators = map.values();
         }

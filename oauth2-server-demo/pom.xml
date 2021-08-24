@@ -40,6 +40,7 @@
         <itextpdf.version>5.5.13</itextpdf.version>
         <itextpdf-core.version>6.2.2</itextpdf-core.version>
         <asian.version>5.2.0</asian.version>
+        <skipTests>true</skipTests>
     </properties>
 
 
@@ -140,6 +141,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <skip>true</skip>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

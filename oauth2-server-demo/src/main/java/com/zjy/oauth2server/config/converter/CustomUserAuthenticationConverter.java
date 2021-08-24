@@ -1,6 +1,6 @@
 package com.zjy.oauth2server.config.converter;
 
-import com.zjy.oauth2server.pojo.entity.system.SysUser;
+import com.zjy.oauth2server.pojo.entity.oauth2.User;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -77,7 +77,7 @@ public class CustomUserAuthenticationConverter implements UserAuthenticationConv
                 principal = user;
             } else {
                 Integer id = (Integer) map.get("id");
-                SysUser user = new SysUser();
+                User user = new User();
                 user.setUsername((String) principal);
                 // map集合中并没有这个id
                 // user.setId(Long.valueOf(id));

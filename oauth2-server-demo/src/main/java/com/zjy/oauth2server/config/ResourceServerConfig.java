@@ -1,15 +1,21 @@
 package com.zjy.oauth2server.config;
 
+import com.zjy.oauth2server.config.manager.CustomAccessDecisionManager;
+import com.zjy.oauth2server.config.manager.CustomSecurityMetadataSource;
 import com.zjy.oauth2server.exception.CustomAccessDeniedHandler;
 import com.zjy.oauth2server.exception.CustomAuthenticationEntryPoint;
 import com.zjy.oauth2server.pojo.constants.SecurityProperties;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 
 /**
  * 资源配置类
@@ -26,6 +32,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     private final TokenStore tokenStore;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
+    @Autowired(required = false)
+    private CustomAccessDecisionManager accessDecisionManager;
+    @Autowired(required = false)
+    private CustomSecurityMetadataSource metadataSource;
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
@@ -38,5 +48,21 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 // 资源服务器权限异常信息处理：配置AccessDeniedHandler自定义异常类，并重写handle方法返回自定义oauth2权限异常信息
                 .accessDeniedHandler(accessDeniedHandler)
                 .stateless(false);
+    }
+
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
+        if (accessDecisionManager != null) {
+            // 重写权限判断
+            http.requestMatchers().anyRequest().and().authorizeRequests()
+                    .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
+                        @Override
+                        public <O extends FilterSecurityInterceptor> O postProcess(O object) {
+                            object.setSecurityMetadataSource(metadataSource);
+                            object.setAccessDecisionManager(accessDecisionManager);
+                            return object;
+                        }
+                    }).anyRequest().authenticated();
+        }
     }
 }

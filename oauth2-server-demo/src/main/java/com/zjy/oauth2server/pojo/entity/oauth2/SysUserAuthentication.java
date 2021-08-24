@@ -21,7 +21,7 @@ public class SysUserAuthentication implements Serializable {
 
     private String email;
 
-    private String phoneNumber;
+    private String mobile;
 
     private String status;
 

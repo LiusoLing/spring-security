@@ -5,6 +5,7 @@ import com.zjy.oauth2server.exception.CustomAccessDeniedHandler;
 import com.zjy.oauth2server.exception.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -59,9 +60,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .requestMatchers().anyRequest().and()
-                // 认证服务器相关资源全部放行，用于处理认证
                 .authorizeRequests()
-                //.antMatchers("/oauth/*").permitAll()
+                .antMatchers(HttpMethod.OPTIONS).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
@@ -72,13 +72,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout()
                 .and()
                 // IF_REQUIRED 可以支持所有的oauth2认证方式，STATELESS支持 密码、客户端等模式
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
         // 自定义退出时处理程序
         //.logoutSuccessHandler(new OauthLogoutSuccessHandler())
         // 退出清楚缓存
         //.addLogoutHandler(oauthLogoutHandler)
         // 指定是否在注销用户时清除，默认为false
-        ;
     }
 
 

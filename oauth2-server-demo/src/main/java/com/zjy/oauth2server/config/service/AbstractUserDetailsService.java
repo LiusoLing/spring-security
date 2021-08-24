@@ -53,7 +53,8 @@ public abstract class AbstractUserDetailsService implements UserDetailsService {
         User user = new User();
         BeanUtils.copyProperties(sysUserAuthentication, user);
         // 填充权限角色信息
-        this.setAuthorize(user);
+        Authorize authorize = getAuthorize(user.getId());
+        this.setAuthorize(authorize, user);
         return user;
     }
 
@@ -76,15 +77,15 @@ public abstract class AbstractUserDetailsService implements UserDetailsService {
     /**
      * 查询认证信息
      *
+     *
+     * @param authorize
      * @param user
      * @throws UsernameNotFoundException
      */
-    public void setAuthorize(User user) throws UsernameNotFoundException {
+    public void setAuthorize(Authorize authorize, User user) throws UsernameNotFoundException {
         if (user == null) {
             throw new UsernameNotFoundException("未查询到有效用户信息");
         }
-
-        Authorize authorize = getAuthorize(user.getId());
         // 无权限
         if (authorize == null) {
             return;
@@ -98,5 +99,5 @@ public abstract class AbstractUserDetailsService implements UserDetailsService {
      * @param id 用户ID
      * @return Authorize
      */
-    abstract Authorize getAuthorize(Long id);
+    public abstract Authorize getAuthorize(Long id);
 }
