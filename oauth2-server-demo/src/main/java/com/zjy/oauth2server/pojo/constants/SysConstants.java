@@ -24,7 +24,7 @@ public class SysConstants {
     /**
      * 斜杆
      */
-    public static final String DIAGONAL = "/";
+    public static final String DIAGONAL = "/**";
     /**
      * 冒号
      */
@@ -54,4 +54,8 @@ public class SysConstants {
      * 前端传递的验证码签名值参数名
      */
     public static final String SIGN = "sign";
+    /**
+     * 验证码模式
+     */
+    public static final String CAPTCHA_AUTH_TYPE = "captcha";
 }

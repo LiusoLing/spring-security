@@ -1,5 +1,7 @@
 package com.zjy.oauth2server.config.manager;
 
+import cn.hutool.core.collection.CollectionUtil;
+import com.zjy.oauth2server.pojo.constants.SysConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.access.AccessDecisionManager;
@@ -19,7 +21,7 @@ import java.util.Collection;
  */
 @Slf4j
 @Component
-@ConditionalOnProperty(name = "zjy.security.oauth2.decision.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "zjy.security.oauth2.decision.enabled", havingValue = "true", matchIfMissing = false)
 public class CustomAccessDecisionManager implements AccessDecisionManager {
 
     /**
@@ -36,14 +38,26 @@ public class CustomAccessDecisionManager implements AccessDecisionManager {
             , InsufficientAuthenticationException {
         String requestUrl = ((FilterInvocation) object).getRequest().getRequestURI();
         log.info("requestUrl:{}", requestUrl);
+        // 为空则说明数据库未对该接口进行权限配置,不进行处理
+        if (CollectionUtil.isEmpty(configAttributes)) {
+            return;
+        }
+
+        // 设置了允许放行或者Ant表达式
+        String first = configAttributes.stream().findFirst().get().getAttribute();
+        if (SysConstants.AUTH_ALLOW.equals(first)) {
+            return;
+        }
+
         // 当前用户所具有的权限
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-
         for (ConfigAttribute attribute : configAttributes) {
             if (this.supports(attribute)) {
-                // Attempt to find a matching granted authority
+                log.debug(">>>>>>>当前账户所拥有的权限：{}" , authorities);
+                log.debug(">>>>>>>当前资源所需要的权限:{}" , attribute.getAttribute());
                 for (GrantedAuthority authority : authorities) {
-                    if (authority.getAuthority().equals("ROLE_ADMIN")) {
+                    // 如果当前用户拥有 /** 权限，放行
+                    if (authority.getAuthority().equals(SysConstants.DIAGONAL)) {
                         return;
                     }
                     if (attribute.getAttribute().equals(authority.getAuthority())) {

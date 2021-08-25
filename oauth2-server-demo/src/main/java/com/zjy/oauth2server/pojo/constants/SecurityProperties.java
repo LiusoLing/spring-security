@@ -43,7 +43,7 @@ public class SecurityProperties {
     @Getter
     public static class Oauth2Properties {
         // 配置要认证的url（默认不需要配置）
-        // 优先级大于忽略认证配置`zlt.security.ignore.httpUrls`,如果同一个url同时配置了`忽略认证`和`需要认证`，则该url还是会被认证
+        // 优先级大于忽略认证配置`zjy.security.ignore.httpUrls`,如果同一个url同时配置了`忽略认证`和`需要认证`，则该url还是会被认证
         private String[] httpUrls = {};
 
         // url权限配置
@@ -53,6 +53,7 @@ public class SecurityProperties {
         private String type;
     }
 
+    @Setter
     @Getter
     public static class UrlPermissionProperties {
         // 是否开启url级别权限

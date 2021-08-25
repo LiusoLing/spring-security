@@ -53,7 +53,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
         if (accessDecisionManager != null) {
-            // 重写权限判断
+            // 重写进行动态权限判断
             http.requestMatchers().anyRequest().and().authorizeRequests()
                     .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
                         @Override
@@ -63,6 +63,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                             return object;
                         }
                     }).anyRequest().authenticated();
+        } else {
+            super.configure(http);
         }
     }
 }

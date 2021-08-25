@@ -31,7 +31,7 @@ public class User implements UserDetails, CredentialsContainer {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (grantedAuthorities == null) {
-            this.grantedAuthorities = this.getRoles().stream().map(role -> new SimpleGrantedAuthority(role)).collect(Collectors.toList());
+            this.grantedAuthorities = this.getResources().stream().map(resource -> new SimpleGrantedAuthority(resource)).collect(Collectors.toList());
         }
         return grantedAuthorities;
     }

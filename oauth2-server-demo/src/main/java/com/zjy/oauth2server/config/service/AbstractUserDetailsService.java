@@ -44,26 +44,25 @@ public abstract class AbstractUserDetailsService implements UserDetailsService {
         }
         integrationAuthentication.setUsername(username);
         // 调用集成验证器自身的验证方法
+        System.out.println(integrationAuthentication);
         SysUserAuthentication sysUserAuthentication = this.authenticate(integrationAuthentication);
 
-        if(sysUserAuthentication == null){
-            throw new UsernameNotFoundException("用户名或密码错误");
+        if (sysUserAuthentication == null) {
+            throw new UsernameNotFoundException("未查询到有效用户信息");
         }
-
-        User user = new User();
-        BeanUtils.copyProperties(sysUserAuthentication, user);
         // 填充权限角色信息
-        Authorize authorize = getAuthorize(user.getId());
-        this.setAuthorize(authorize, user);
+        Authorize authorize = getAuthorize(sysUserAuthentication.getId());
+        User user = this.setAuthorize(authorize, sysUserAuthentication);
         return user;
     }
 
     /**
      * 调用集成验证器自身的验证方法
+     *
      * @param integrationAuthentication 集成登录参数对象
      * @return SysUserAuthentication
      */
-    private SysUserAuthentication authenticate(IntegrationAuthentication integrationAuthentication) {
+    public SysUserAuthentication authenticate(IntegrationAuthentication integrationAuthentication) {
         if (this.authenticators != null) {
             for (IntegrationAuthenticator authenticator : authenticators) {
                 if (authenticator.support(integrationAuthentication)) {
@@ -75,27 +74,30 @@ public abstract class AbstractUserDetailsService implements UserDetailsService {
     }
 
     /**
-     * 查询认证信息
-     *
+     * 设置角色权限信息
      *
      * @param authorize
-     * @param user
+     * @param authorize
      * @throws UsernameNotFoundException
      */
-    public void setAuthorize(Authorize authorize, User user) throws UsernameNotFoundException {
+    public User setAuthorize(Authorize authorize, SysUserAuthentication sysUserAuthentication) throws UsernameNotFoundException {
+        User user = new User();
+        BeanUtils.copyProperties(sysUserAuthentication, user);
         if (user == null) {
             throw new UsernameNotFoundException("未查询到有效用户信息");
         }
         // 无权限
         if (authorize == null) {
-            return;
+            return user;
         }
         user.setRoles(authorize.getRoles());
         user.setResources(authorize.getResources());
+        return user;
     }
 
     /**
      * 获取角色和权限列表
+     *
      * @param id 用户ID
      * @return Authorize
      */

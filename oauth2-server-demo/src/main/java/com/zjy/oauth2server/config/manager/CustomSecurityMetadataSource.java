@@ -22,7 +22,7 @@ import java.util.Collection;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "zjy.security.oauth2.decision.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "zjy.security.oauth2.decision.enabled", havingValue = "true", matchIfMissing = false)
 public class CustomSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
 
     /**

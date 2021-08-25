@@ -54,7 +54,7 @@ public class AuthController {
 
     @GetMapping("/captcha")
     @ApiOperation("获取验证码")
-    public void captcha(String code, HttpServletResponse response) throws Exception {
+    public void captcha(String codeId, HttpServletResponse response) throws Exception {
         // 设置请求头为输出图片类型
         response.setContentType("image/gif");
         response.setHeader("Pragma", "No-cache");
@@ -67,7 +67,7 @@ public class AuthController {
         specCaptcha.setCharType(Captcha.TYPE_NUM_AND_UPPER);
 
         // 验证码存入缓存，有效时间2分钟
-        redisTemplate.opsForValue().set(String.format(SysConstants.CAPTCHA_REDIS_KEY, securityProperties.getApplicationName(), code),
+        redisTemplate.opsForValue().set(String.format(SysConstants.CAPTCHA_REDIS_KEY, securityProperties.getApplicationName(), codeId),
                 specCaptcha.text(), 2, TimeUnit.MINUTES);
         // 输出图片流
         specCaptcha.out(response.getOutputStream());
